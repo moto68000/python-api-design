@@ -1,0 +1,27 @@
+name: CI Pipeline
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build image
+        run: docker build -t my-app .
+
+      - name: Run tests
+        env:
+          DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+        run: |
+          docker run --env DATABASE_HOSTNAME=$DATABASE_HOSTNAME \
+                     --env DATABASE_PORT=$DATABASE_PORT \
+                     --env DATABASE_PASSWORD=$DATABASE_PASSWORD \
+                     --env DATABASE_NAME=$DATABASE_NAME \
+                     --env DATABASE_USERNAME=$DATABASE_USERNAME \
+                     my-app pytest
