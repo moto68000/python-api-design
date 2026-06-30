@@ -1,0 +1,25 @@
+name: Deploy FastAPI to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Aquí le decimos a GitHub que use los secretos que configuraste
+      - name: Build and Push
+        run: |
+          docker build -t my-fastapi-app .
+          # Si tienes un registro (como Docker Hub o GitHub Packages), 
+          # aquí iría el comando para hacer push.
+          # Por ahora, verificamos que el build no falle:
+          docker run --env-file <(env) my-fastapi-app pytest
