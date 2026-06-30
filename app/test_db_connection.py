@@ -2,6 +2,8 @@ import os
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
+print(f"DEBUG: PORT es {os.getenv('DATABASE_PORT')}")
+
 def test_supabase_connection():
     # Obtenemos la URL de los secretos de GitHub o del .env
     db_url = f"postgresql://{os.getenv('DATABASE_USERNAME')}:{os.getenv('DATABASE_PASSWORD')}@{os.getenv('DATABASE_HOSTNAME')}:{os.getenv('DATABASE_PORT')}/{os.getenv('DATABASE_NAME')}"
