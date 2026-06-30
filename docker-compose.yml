@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # 1. El contenedor de la API (FastAPI)
+  api:
+    build: .
+    ports:
+      - "8001:8000"
+    # El Bind Mount: Refleja los cambios de tu código local en tiempo real dentro de Docker
+    volumes:
+      - ./app:/code/app
+    # Inyecta automáticamente el archivo de variables que ya validamos antes
+    env_file:
+      - .env
+    # No arranca la API hasta que Postgres pase el examen de salud (Healthcheck)
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 2. El contenedor de la Base de Datos (PostgreSQL)
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "5433:5432"
+    # Mantiene los datos a salvo en tu disco local aunque borres el contenedor
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # El guardián: Verifica que Postgres esté listo para recibir conexiones de red
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
