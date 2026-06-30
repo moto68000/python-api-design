@@ -1,0 +1,8 @@
+name: Debug Pipeline
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hola Mundo
+        run: echo "El pipeline está vivo"
